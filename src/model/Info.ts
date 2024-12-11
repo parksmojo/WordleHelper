@@ -48,4 +48,8 @@ export class WordInfo {
     }
     return chars;
   }
+
+  public static fromTuple(tuple: [string, string]): WordInfo {
+    return new WordInfo(tuple[0], tuple[1]);
+  }
 }

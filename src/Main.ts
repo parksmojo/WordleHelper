@@ -2,19 +2,15 @@ import { Importer } from "./files/Importer";
 import { CharInfo, WordInfo } from "./model/Info";
 import { WordleFilter } from "./model/WordleFilter";
 
-function main() {
+function main(input: [string, string][]) {
   const words = Importer.importWords(true);
   const filter = new WordleFilter(words);
-  const triedWords: WordInfo[] = [
-    new WordInfo("alive", "bgbbb"),
-    new WordInfo("young", "bbgbb"),
-    new WordInfo("pucks", "gybbb"),
-  ];
-  const params: CharInfo[] = [];
-  triedWords.forEach((word) => params.push(...word.getCharInfo()));
-  filter.addParams(params);
-  const result = filter.getList();
 
+  const params: CharInfo[] = [];
+  input.forEach((word) => params.push(...WordInfo.fromTuple(word).getCharInfo()));
+  filter.addParams(params);
+
+  const result = filter.getList();
   const printAll = true;
   if (printAll) {
     console.log(result);
@@ -26,4 +22,10 @@ function main() {
   }
 }
 
-main();
+const triedWords: [string, string][] = [
+  ["alive", "bgbbb"],
+  ["young", "bbgbb"],
+  ["pucks", "gybbb"],
+];
+
+main(triedWords);
