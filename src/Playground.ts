@@ -15,8 +15,7 @@ interface CharInfo {
 
 interface WordInfo {
   word: string;
-  yellow: number[];
-  green: number[];
+  colors: string;
 }
 
 function filter(list: string[], chars: CharInfo[], filterFunc: (word: string, char: string, pos: number) => boolean) {
@@ -72,39 +71,49 @@ function wordleFilter(wordList: string[], params: CharInfo[]): string[] {
   return result;
 }
 
-function importWords(): string[] {
-  const data = fs.readFileSync("./word-lists/PossibleGuesses.txt", { encoding: "utf8", flag: "r" });
+function importWords(includeAll: boolean): string[] {
+  const data = fs.readFileSync(`./word-lists/${includeAll ? "PossibleGuesses" : "RealAnswers"}.txt`, {
+    encoding: "utf8",
+    flag: "r",
+  });
   return JSON.parse(data);
 }
 
 function wordToChars(word: WordInfo): CharInfo[] {
   const chars: CharInfo[] = [];
   for (let i = 0; i < 5; i++) {
-    if (word.green.includes(i)) {
+    if (word.colors[i] === "g") {
       chars.push({ character: word.word[i], state: CharState.green, position: i });
-    } else if (word.yellow.includes(i)) {
+    } else if (word.colors[i] === "y") {
       chars.push({ character: word.word[i], state: CharState.yellow, position: i });
-    } else {
+    } else if (word.colors[i] === "b") {
       chars.push({ character: word.word[i], state: CharState.black, position: i });
+    } else {
+      throw new Error("Color not found");
     }
   }
   return chars;
 }
 
 function main() {
-  const words = importWords();
+  const words = importWords(true);
   let i = 0;
   const triedWords: WordInfo[] = [
-    { word: "alive", green: [], yellow: [0, 4] },
-    { word: "young", green: [], yellow: [0] },
-    { word: "weary", green: [1, 2, 4], yellow: [3] },
+    { word: "alive", colors: "bgbbb" },
+    { word: "young", colors: "bbgbb" },
+    { word: "pucks", colors: "gybbb" },
   ];
   const params: CharInfo[] = [];
   triedWords.forEach((val) => params.push(...wordToChars(val)));
   const result = wordleFilter(words, params);
-  console.log(result.slice(0, 5));
-  if (result.length > 10) {
-    console.log(result.slice(-5));
+  const printAll = true;
+  if (printAll) {
+    console.log(result);
+  } else {
+    console.log(result.slice(0, 5));
+    if (result.length > 10) {
+      console.log(result.slice(-5));
+    }
   }
 }
 

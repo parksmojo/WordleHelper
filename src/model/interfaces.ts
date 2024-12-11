@@ -13,6 +13,5 @@ export interface CharInfo {
 
 export interface WordInfo {
   word: string;
-  yellow: number[];
-  green: number[];
+  colors: string;
 }
