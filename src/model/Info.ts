@@ -24,6 +24,11 @@ export interface CharInfo {
   position: number;
 }
 
+export interface WordInfoDto {
+  guess: string;
+  colors: string;
+}
+
 export class WordInfo {
   private guess: string;
   private colors: string;
@@ -47,6 +52,14 @@ export class WordInfo {
       }
     }
     return chars;
+  }
+
+  public get dto(): WordInfoDto {
+    return { guess: this.guess, colors: this.colors };
+  }
+
+  public static fromDto(obj: WordInfoDto): WordInfo {
+    return new WordInfo(obj.guess, obj.colors);
   }
 
   public static fromTuple(tuple: [string, string]): WordInfo {
