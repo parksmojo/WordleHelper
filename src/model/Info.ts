@@ -3,11 +3,14 @@ export class StateInfo {
   public static readonly black: string = "black";
   public static readonly yellow: string = "yellow";
   public static readonly green: string = "green";
+  public static readonly orange: string = "orange";
 
   public static getFunc(state: string): (word: string, char: string, pos: number) => boolean {
     switch (state) {
       case this.black:
         return (word: string, char: string, pos: number) => !word.includes(char);
+      case this.orange:
+        return (word: string, char: string, pos: number) => word.includes(char);
       case this.yellow:
         return (word: string, char: string, pos: number) => word.includes(char) && word[pos] !== char;
       case this.green:
@@ -47,6 +50,8 @@ export class WordInfo {
         chars.push({ character: this.guess[i], state: StateInfo.yellow, position: i });
       } else if (this.colors[i] === "b") {
         chars.push({ character: this.guess[i], state: StateInfo.black, position: i });
+      } else if (this.colors[i] === "o") {
+        chars.push({ character: this.guess[i], state: StateInfo.orange, position: i });
       } else {
         throw new Error("Color not found");
       }

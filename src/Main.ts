@@ -1,5 +1,5 @@
 import { Importer } from "./files/Importer";
-import { CharInfo, WordInfo } from "./model/Info";
+import { CharInfo, StateInfo, WordInfo } from "./model/Info";
 import { WordleFilter } from "./model/WordleFilter";
 
 function main(input: [string, string][]) {
@@ -20,12 +20,20 @@ function main(input: [string, string][]) {
       console.log(result.slice(-5));
     }
   }
+
+  const testParams: CharInfo[] = [
+    { character: "p", state: StateInfo.orange, position: 0 },
+    { character: "c", state: StateInfo.orange, position: 0 },
+    // { character: "s", state: StateInfo.orange, position: 0 },
+  ];
+
+  const possible = filter.getPossibleWords(testParams);
+  console.log(possible);
 }
 
 const triedWords: [string, string][] = [
   ["alive", "bgbbb"],
   ["young", "bbgbb"],
-  ["pucks", "gybbb"],
 ];
 
 main(triedWords);
