@@ -2,18 +2,15 @@ import { CharInfo, StateInfo } from "./Info";
 
 export class WordleFilter {
   private wordList: string[];
+  private currParams: CharInfo[];
 
   constructor(list: string[]) {
     this.wordList = list;
+    this.currParams = [];
   }
 
   public getList(): string[] {
     return this.wordList;
-  }
-
-  public getRandomWord(): string {
-    const i = Math.floor(Math.random() * this.wordList.length);
-    return this.wordList[i];
   }
 
   public getPossibleWords(params: CharInfo[], words?: string[]): string[] {
@@ -25,14 +22,35 @@ export class WordleFilter {
     return words;
   }
 
+  public run(params: CharInfo[]): string[] {
+    this.addParams(params);
+    this.update();
+    return this.wordList;
+  }
+
   public addParams(params: CharInfo[]): void {
+    for (let param of params) {
+      const existingIndex = this.currParams.findIndex((char) => char.character === param.character);
+      if (existingIndex >= 0) {
+        if (this.currParams[existingIndex].state == StateInfo.green) {
+          continue;
+        } else if (this.currParams[existingIndex].state == StateInfo.yellow && param.state === StateInfo.green) {
+          this.currParams[existingIndex] = param;
+        }
+      } else {
+        this.currParams.push(param);
+      }
+    }
+  }
+
+  public update(): void {
     console.log(
       `Filtering ${this.wordList.length} words from ${this.wordList[0]} to ${this.wordList[this.wordList.length - 1]}`
     );
     console.log("---------");
 
     for (let state in StateInfo) {
-      const chars = params.filter((val) => val.state === state);
+      const chars = this.currParams.filter((val) => val.state === state);
       if (chars.length !== 0) {
         this.wordList = this.applyFilter(this.wordList, state, chars, StateInfo.getFunc(state));
       }

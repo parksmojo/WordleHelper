@@ -1,9 +1,9 @@
 export class StateInfo {
-  public static readonly unknown: string = "none";
-  public static readonly black: string = "black";
-  public static readonly yellow: string = "yellow";
   public static readonly green: string = "green";
+  public static readonly yellow: string = "yellow";
+  public static readonly black: string = "black";
   public static readonly orange: string = "orange";
+  public static readonly unknown: string = "none";
 
   public static getFunc(state: string): (word: string, char: string, pos: number) => boolean {
     switch (state) {

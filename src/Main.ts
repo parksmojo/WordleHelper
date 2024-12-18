@@ -1,5 +1,5 @@
 import { Importer } from "./files/Importer";
-import { CharInfo, StateInfo, WordInfo } from "./model/Info";
+import { CharInfo, WordInfo } from "./model/Info";
 import { WordleFilter } from "./model/WordleFilter";
 
 function main(input: [string, string][]) {
@@ -8,9 +8,9 @@ function main(input: [string, string][]) {
 
   const params: CharInfo[] = [];
   input.forEach((word) => params.push(...WordInfo.fromTuple(word).getCharInfo()));
-  filter.addParams(params);
 
-  const result = filter.getList();
+  const result = filter.run(params);
+
   const printAll = true;
   if (printAll) {
     console.log(result);
@@ -21,19 +21,21 @@ function main(input: [string, string][]) {
     }
   }
 
-  const testParams: CharInfo[] = [
-    { character: "p", state: StateInfo.orange, position: 0 },
-    { character: "c", state: StateInfo.orange, position: 0 },
-    // { character: "s", state: StateInfo.orange, position: 0 },
-  ];
+  // const testParams: CharInfo[] = [
+  //   { character: "p", state: StateInfo.orange, position: 0 },
+  //   { character: "c", state: StateInfo.orange, position: 0 },
+  //   // { character: "s", state: StateInfo.orange, position: 0 },
+  // ];
 
-  const possible = filter.getPossibleWords(testParams);
-  console.log(possible);
+  // const possible = filter.getPossibleWords(testParams);
+  // console.log(possible);
 }
 
 const triedWords: [string, string][] = [
-  ["alive", "bgbbb"],
-  ["young", "bbgbb"],
+  ["tales", "ybbyb"],
+  ["evict", "ybbby"],
+  ["quote", "bbbgy"],
+  ["depth", "bgbgy"],
 ];
 
 main(triedWords);
