@@ -1,4 +1,4 @@
-import { CharInfo, StateInfo } from "./Info";
+import { CharInfo, StateInfo, WordInfo } from "./Info";
 
 export class WordleFilter {
   private wordList: string[];
@@ -20,6 +20,36 @@ export class WordleFilter {
       words = this.applyFilter(words, StateInfo.orange, chars, StateInfo.getFunc(StateInfo.orange));
     }
     return words;
+  }
+
+  public getHelpfulWords(minimumWords: number) {
+    const letters = this.getHelpfulLetters(5);
+    const params: CharInfo[] = letters.map((letter) => {
+      return { character: letter, state: StateInfo.orange, position: 0 };
+    });
+
+    let words = this.getPossibleWords(params);
+    while (words.length < minimumWords) {
+      params.pop();
+      words = this.getPossibleWords(params);
+    }
+
+    return words.slice(0, minimumWords);
+  }
+
+  public getHelpfulLetters(numLetters?: number): string[] {
+    const checkedLetters = new Set(this.currParams.map((param) => param.character));
+    const letterCounts = new Map();
+    for (let word of this.wordList) {
+      const letterArray = word.split("");
+      const filteredArray = letterArray.filter((letter) => !checkedLetters.has(letter));
+      const letters = new Set(filteredArray);
+      for (let letter of letters) {
+        letterCounts.set(letter, letterCounts.get(letter) ? letterCounts.get(letter) + 1 : 1);
+      }
+    }
+    const sortedArray = Array.from(letterCounts.entries()).sort(([, countA], [, countB]) => countB - countA);
+    return sortedArray.slice(0, numLetters ?? 5).map(([letter, count]) => letter);
   }
 
   public run(params: CharInfo[]): string[] {

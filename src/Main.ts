@@ -21,6 +21,9 @@ function main(input: [string, string][]) {
     }
   }
 
+  // filter.getHelpfulLetters();
+  console.log(filter.getHelpfulWords(10));
+
   // const testParams: CharInfo[] = [
   //   { character: "p", state: StateInfo.orange, position: 0 },
   //   { character: "c", state: StateInfo.orange, position: 0 },
@@ -32,10 +35,9 @@ function main(input: [string, string][]) {
 }
 
 const triedWords: [string, string][] = [
-  ["tales", "ybbyb"],
-  ["evict", "ybbby"],
-  ["quote", "bbbgy"],
-  ["depth", "bgbgy"],
+  ["young", "bbbbb"],
+  // ["sadic", "ggbbb"],
+  // ["groan", "bbbyy"],
 ];
 
 main(triedWords);
