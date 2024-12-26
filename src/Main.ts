@@ -1,43 +1,91 @@
-import { Importer } from "./files/Importer";
-import { CharInfo, WordInfo } from "./model/Info";
 import { WordleFilter } from "./model/WordleFilter";
+import { Importer } from "./files/Importer";
+import { WordInfo } from "./model/Info";
 
-function main(input: [string, string][]) {
-  const words = Importer.importWords(true);
-  const filter = new WordleFilter(words);
+let inputBuffer = "";
+const stdin = process.stdin;
+stdin.setEncoding("utf-8");
+stdin.resume();
 
-  const params: CharInfo[] = [];
-  input.forEach((word) => params.push(...WordInfo.fromTuple(word).getCharInfo()));
+const readInput = (): Promise<string> => {
+  return new Promise((resolve) => {
+    stdin.once("data", (data) => resolve(data.toString()));
+  });
+};
 
-  const result = filter.run(params);
+const mainLoop = async (allWords: string[]) => {
+  let filter = new WordleFilter(allWords);
+  while (true) {
+    process.stdout.write("> ");
+    const input = (await readInput()).trim().toLowerCase();
 
-  const printAll = true;
-  if (printAll) {
-    console.log(result);
-  } else {
-    console.log(result.slice(0, 5));
-    if (result.length > 10) {
-      console.log(result.slice(-5));
+    if (input === "exit") {
+      process.stdout.write("Goodbye!\n");
+      process.exit(0);
+    } else if (input === "help") {
+      printHelp();
+    } else if (input === "add") {
+      process.stdout.write("Enter the word: ");
+      const word = (await readInput()).trim().toLowerCase();
+      if (word.length != 5) {
+        process.stdout.write("Icorrect word size");
+        continue;
+      }
+      process.stdout.write("Enter the colors: ");
+      const states = (await readInput()).trim().toLowerCase();
+      if (states.length != 5) {
+        process.stdout.write("Icorrect word size");
+        continue;
+      }
+      filter.run(WordInfo.fromTuple([word, states]).getCharInfo());
+    } else if (input === "see") {
+      console.log(filter.getList());
+    } else if (input === "words") {
+      process.stdout.write("Enter the number of words you want: ");
+      const input = (await readInput()).trim();
+      const number = parseInt(input);
+      const words = filter.getHelpfulWords(number);
+      console.log(words);
+    } else if (input === "letters") {
+      console.log(filter.getHelpfulLetters());
+    } else if (input === "new") {
+      filter = new WordleFilter(allWords);
+    } else {
+      process.stdout.write("Unrecognized command\n");
+      printHelp();
     }
   }
+};
 
-  // filter.getHelpfulLetters();
-  console.log(filter.getHelpfulWords(10));
+const printHelp = () => {
+  process.stdout.write("  add - Add a word to the filter\n");
+  process.stdout.write("  see - See all possible words\n");
+  process.stdout.write("  words - See a list of good guesses\n");
+  process.stdout.write("  letters - See a list of common letters\n");
+  process.stdout.write("  new - Restart the filter\n");
+  process.stdout.write("  help - See this menu\n");
+  process.stdout.write("  exit - close this program\n");
+};
 
-  // const testParams: CharInfo[] = [
-  //   { character: "p", state: StateInfo.orange, position: 0 },
-  //   { character: "c", state: StateInfo.orange, position: 0 },
-  //   // { character: "s", state: StateInfo.orange, position: 0 },
-  // ];
+async function main() {
+  process.stdout.write("Welcome to the TypeScript REPL!\n");
 
-  // const possible = filter.getPossibleWords(testParams);
-  // console.log(possible);
+  let words: string[];
+  while (true) {
+    process.stdout.write("Please enter 'easy' or 'hard': ");
+    const mode = (await readInput()).trim().toLowerCase();
+    if (mode === "easy") {
+      words = Importer.importWords(false);
+      break;
+    } else if (mode === "hard") {
+      words = Importer.importWords(true);
+      break;
+    } else {
+      process.stdout.write("Unrecognized response. Please try again\n");
+    }
+  }
+  printHelp();
+  mainLoop(words);
 }
 
-const triedWords: [string, string][] = [
-  ["young", "bbbbb"],
-  // ["sadic", "ggbbb"],
-  // ["groan", "bbbyy"],
-];
-
-main(triedWords);
+main();
